@@ -1,7 +1,15 @@
 #include "HeaderFiles/ShoppingSystem.h"
 
 ShoppingSystem::ShoppingSystem(std::string dbName, std::string username, std::string password)
-    : _dbName(dbName), _username(username), _password(password) {}
+    : _dbName(dbName), _username(username), _password(password)
+{
+    RunInitialSQLQueries(dbName, username, password);
+}
+
+void ShoppingSystem::RunInitialSQLQueries(std::string dbName, std::string username, std::string password)
+{
+    system("start cmd");
+}
 
 std::string ShoppingSystem::getDbName() const
 {
