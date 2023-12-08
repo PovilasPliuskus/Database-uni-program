@@ -15,6 +15,8 @@ private:
 public:
     ShoppingSystem(std::string dbName, std::string username, std::string password);
 
+    void ConnectToDataBase();
+
     std::string getDbName() const;
     std::string getUsername() const;
     std::string getPassword() const;

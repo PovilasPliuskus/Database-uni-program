@@ -5,7 +5,7 @@
 int main()
 {
 
-    ShoppingSystem shoppingSystem("MyDB", "MyUsername", "MyPassword");
+    ShoppingSystem shoppingSystem("dbvs", "postgres", "password");
 
     return 0;
 }

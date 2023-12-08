@@ -3,7 +3,11 @@
 ShoppingSystem::ShoppingSystem(std::string dbName, std::string username, std::string password)
     : _dbName(dbName), _username(username), _password(password)
 {
-    RunInitialSQLQueries(dbName, username, password);
+    ConnectToDataBase();
+}
+
+void ShoppingSystem::ConnectToDataBase()
+{
 }
 
 void ShoppingSystem::RunInitialSQLQueries(std::string dbName, std::string username, std::string password)
