@@ -1,8 +1,8 @@
-program: main.o
-	g++ main.o -o program.exe
+program: Code/main.o
+	g++ Code/main.o -o program.exe
 
-main.o: main.cpp
-	g++ -c main.cpp
+Code/main.o: Code/main.cpp
+	g++ -c Code/main.cpp -o Code/main.o
 
 clean:
-	del *.o program.exe
+	del Code\*.o program.exe
