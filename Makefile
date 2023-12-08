@@ -1,8 +1,24 @@
-program: Code/main.o
-	g++ Code/main.o -o program.exe
+CC = g++
+CFLAGS = -std=c++11 -Wall
+PROGRAM = program.exe
 
-Code/main.o: Code/main.cpp
-	g++ -c Code/main.cpp -o Code/main.o
+# DIRECTORIES
+SRC_DIR = src
+OBJ_DIR = obj
+SHOPPING_SYSTEM_DIR = $(SRC_DIR)/ShoppingSystem
+SHOPPING_SYSTEM_HEADER_DIR = $(SHOPPING_SYSTEM_DIR)/HeaderFiles
+
+$(PROGRAM): $(OBJ_DIR)/main.o $(OBJ_DIR)/ShoppingSystem.o
+	$(CC) $(CFLAGS) $^ -o $@
+
+$(OBJ_DIR)/main.o: $(SRC_DIR)/main.cpp $(SHOPPING_SYSTEM_HEADER_DIR)/ShoppingSystem.h | $(OBJ_DIR)
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(OBJ_DIR)/ShoppingSystem.o: $(SHOPPING_SYSTEM_DIR)/ShoppingSystem.cpp $(SHOPPING_SYSTEM_HEADER_DIR)/ShoppingSystem.h | $(OBJ_DIR)
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(OBJ_DIR):
+	mkdir $(OBJ_DIR)
 
 clean:
-	del Code\*.o program.exe
+	del $(OBJ_DIR)\*.o $(PROGRAM)
