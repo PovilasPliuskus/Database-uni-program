@@ -2,6 +2,8 @@
 #define SHOPPINGSYSTEM_H
 
 #include <string>
+#include <iostream>
+#include "../../../include/libpq-fe.h"
 
 class ShoppingSystem
 {
