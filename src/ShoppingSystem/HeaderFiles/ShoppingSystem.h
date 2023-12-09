@@ -3,6 +3,7 @@
 
 #include <string>
 #include <iostream>
+#include <limits>
 #include "../../../include/libpq-fe.h"
 
 class ShoppingSystem
@@ -16,6 +17,8 @@ private:
     bool ConnectToDataBase();
     void DisconnectFromDataBase();
     void ShowMenu();
+    int RetrieveUsersInput();
+    bool IsValidInput(int input);
 
 public:
     ShoppingSystem(std::string dbName, std::string username, std::string password);
