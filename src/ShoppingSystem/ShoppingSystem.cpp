@@ -84,6 +84,9 @@ void ShoppingSystem::ExecuteUsersCommand(int input)
     case 4:
         AddNewProduct();
         break;
+    case 5:
+        ChangeProductPrice();
+        break;
     default:
         std::cout << "Not implemented, yet" << std::endl;
     }
@@ -232,6 +235,105 @@ void ShoppingSystem::InsertProduct(const std::string &productName, float product
     }
 
     PQclear(result);
+}
+
+void ShoppingSystem::ChangeProductPrice()
+{
+    PrintTable("popl8979.Produktas");
+    int index = RetrieveIndex("popl8979.Produktas", "ProduktoID");
+    if (index == -1)
+    {
+        return;
+    }
+    else
+    {
+        float newPrice = RetrieveProductPrice();
+        UpdateProductPrice(index, newPrice);
+    }
+}
+
+void ShoppingSystem::UpdateProductPrice(int index, float newPrice)
+{
+    if (!_conn)
+    {
+        std::cerr << "Not connected to the database." << std::endl;
+        return;
+    }
+
+    // Construct the SQL query to update the price
+    std::string sqlQuery = "UPDATE popl8979.Produktas SET Kaina = " + std::to_string(newPrice) + " WHERE ProduktoID = " + std::to_string(index) + ";";
+
+    // Execute the SQL query
+    PGresult *result = PQexec(_conn, sqlQuery.c_str());
+
+    // Check for a successful query execution
+    if (PQresultStatus(result) != PGRES_COMMAND_OK)
+    {
+        std::cerr << "Query execution failed: " << PQerrorMessage(_conn) << std::endl;
+    }
+    else
+    {
+        std::cout << "Product price updated successfully!" << std::endl;
+    }
+
+    // Clear the result object
+    PQclear(result);
+}
+
+int ShoppingSystem::RetrieveIndex(std::string tableName, std::string idColumnName)
+{
+    if (!_conn)
+    {
+        std::cerr << "Not connected to the database." << std::endl;
+        return -1; // or some sentinel value indicating failure
+    }
+
+    // Get user input for the ID
+    int userInputId;
+    std::cout << "Enter the " << idColumnName << ": ";
+
+    while (!(std::cin >> userInputId) || std::cin.peek() != '\n')
+    {
+        std::cerr << "Invalid input. Please enter a valid integer." << std::endl;
+
+        // Clear the error flag and discard invalid input
+        std::cin.clear();
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+        // Prompt the user again
+        std::cout << "Enter the " << idColumnName << ": ";
+    }
+
+    // Construct the SQL query to validate the ID
+    std::string sqlQuery = "SELECT COUNT(*) FROM " + tableName + " WHERE " + idColumnName + " = " + std::to_string(userInputId) + ";";
+
+    // Execute the SQL query
+    PGresult *result = PQexec(_conn, sqlQuery.c_str());
+
+    // Check for a successful query execution
+    if (PQresultStatus(result) != PGRES_TUPLES_OK)
+    {
+        std::cerr << "Query execution failed: " << PQerrorMessage(_conn) << std::endl;
+        PQclear(result);
+        return -1; // or some sentinel value indicating failure
+    }
+
+    // Get the count from the result
+    int rowCount = std::stoi(PQgetvalue(result, 0, 0));
+
+    // Clear the result object
+    PQclear(result);
+
+    // Check if the ID exists in the table
+    if (rowCount > 0)
+    {
+        return userInputId;
+    }
+    else
+    {
+        std::cerr << "ID " << userInputId << " does not exist in the table." << std::endl;
+        return -1; // or some sentinel value indicating failure
+    }
 }
 
 bool ShoppingSystem::ConnectToDataBase()
