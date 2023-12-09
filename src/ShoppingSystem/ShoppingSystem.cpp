@@ -78,6 +78,9 @@ void ShoppingSystem::ExecuteUsersCommand(int input)
     case 2:
         PrintTable("popl8979.Produktas");
         break;
+    case 3:
+        PrintTable("popl8979.ParduotuvesIrProduktai");
+        break;
     default:
         std::cout << "Not implemented, yet" << std::endl;
     }
