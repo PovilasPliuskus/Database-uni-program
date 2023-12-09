@@ -4,6 +4,7 @@
 #include <string>
 #include <iostream>
 #include <limits>
+#include <iomanip>
 #include "../../../include/libpq-fe.h"
 
 class ShoppingSystem
@@ -20,6 +21,7 @@ private:
     int RetrieveUsersInput();
     bool IsValidInput(int input);
     void ExecuteUsersCommand(int input);
+    void PrintTable(std::string tableName);
 
 public:
     ShoppingSystem(std::string dbName, std::string username, std::string password);

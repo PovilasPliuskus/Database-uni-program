@@ -23,7 +23,12 @@ void ShoppingSystem::Start()
 void ShoppingSystem::ShowMenu()
 {
     std::cout << "0. Exit program" << std::endl;
-    std::cout << "1. Something to do" << std::endl;
+    std::cout << "1. View all shops" << std::endl;
+    std::cout << "2. View all products" << std::endl;
+    std::cout << "3. View shops and products" << std::endl;
+    std::cout << "4. Add a new product" << std::endl;
+    std::cout << "5. Change the price of a product" << std::endl;
+    std::cout << "6. Get rid of a product" << std::endl;
 }
 
 int ShoppingSystem::RetrieveUsersInput()
@@ -57,7 +62,7 @@ int ShoppingSystem::RetrieveUsersInput()
 
 bool ShoppingSystem::IsValidInput(int input)
 {
-    return input >= 0 && input <= 5;
+    return input >= 0 && input <= 6;
 }
 
 void ShoppingSystem::ExecuteUsersCommand(int input)
@@ -68,11 +73,69 @@ void ShoppingSystem::ExecuteUsersCommand(int input)
         DisconnectFromDataBase();
         break;
     case 1:
-        std::cout << "1 was entered" << std::endl;
+        PrintTable("popl8979.Parduotuve");
+        break;
+    case 2:
+        PrintTable("popl8979.Produktas");
         break;
     default:
         std::cout << "Not implemented, yet" << std::endl;
     }
+}
+
+void ShoppingSystem::PrintTable(std::string tableName)
+{
+    if (!_conn)
+    {
+        std::cerr << "Not connected to the database." << std::endl;
+        return;
+    }
+
+    std::string sqlQuery = "SELECT * FROM " + tableName + ";";
+    PGresult *result = PQexec(_conn, sqlQuery.c_str());
+
+    if (PQresultStatus(result) != PGRES_TUPLES_OK)
+    {
+        std::cerr << "Query execution failed: " << PQerrorMessage(_conn) << std::endl;
+        PQclear(result);
+        return;
+    }
+
+    // Get the number of rows and columns in the result
+    int numRows = PQntuples(result);
+    int numCols = PQnfields(result);
+
+    int colWidth = 100 / numCols;
+
+    // Print column names
+    for (int col = 0; col < numCols - 1; ++col)
+    {
+        std::cout << std::setw(colWidth) << std::left << PQfname(result, col) << "|";
+    }
+    // Print the last column without the '|'
+    std::cout << std::setw(colWidth) << std::left << PQfname(result, numCols - 1) << std::endl;
+
+    // Print line of dashes
+    for (int col = 0; col <= 100; ++col)
+    {
+        std::cout << "-";
+    }
+    std::cout << std::endl;
+
+    // Print the data
+    for (int row = 0; row < numRows; ++row)
+    {
+        for (int col = 0; col < numCols - 1; ++col)
+        {
+            std::cout << std::setw(colWidth) << std::left << PQgetvalue(result, row, col) << "|";
+        }
+        // Print the last column without the '|'
+        std::cout << std::setw(colWidth) << std::left << PQgetvalue(result, row, numCols - 1) << std::endl;
+    }
+    std::cout << std::endl;
+
+    // Clear the result object
+    PQclear(result);
 }
 
 bool ShoppingSystem::ConnectToDataBase()
