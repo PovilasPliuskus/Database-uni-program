@@ -30,6 +30,8 @@ private:
     void ChangeProductPrice();
     int RetrieveIndex(std::string tableName, std::string idColumnName);
     void UpdateProductPrice(int index, float newPrice);
+    void GetRidOfProduct();
+    void DeleteProduct(int index);
 
 public:
     ShoppingSystem(std::string dbName, std::string username, std::string password);
