@@ -81,6 +81,9 @@ void ShoppingSystem::ExecuteUsersCommand(int input)
     case 3:
         PrintTable("popl8979.ParduotuvesIrProduktai");
         break;
+    case 4:
+        AddNewProduct();
+        break;
     default:
         std::cout << "Not implemented, yet" << std::endl;
     }
@@ -139,6 +142,34 @@ void ShoppingSystem::PrintTable(std::string tableName)
 
     // Clear the result object
     PQclear(result);
+}
+
+void ShoppingSystem::AddNewProduct()
+{
+    std::cout << RetrieveProductName() << std::endl;
+}
+
+std::string ShoppingSystem::RetrieveProductName()
+{
+    std::string productName;
+    std::regex latinLetters("^[a-zA-Z]+$");
+
+    do
+    {
+        std::cout << "Enter product name: ";
+        std::cin >> productName;
+
+        if (!std::regex_match(productName, latinLetters))
+        {
+            std::cerr << "Invalid input. Product name should contain only Latin letters" << std::endl;
+        }
+        else
+        {
+            break;
+        }
+    } while (true);
+
+    return productName;
 }
 
 bool ShoppingSystem::ConnectToDataBase()
