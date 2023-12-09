@@ -73,14 +73,17 @@ void ShoppingSystem::ExecuteUsersCommand(int input)
         DisconnectFromDataBase();
         break;
     case 1:
-        PrintShopTable();
+        PrintTable("popl8979.Parduotuve");
+        break;
+    case 2:
+        PrintTable("popl8979.Produktas");
         break;
     default:
         std::cout << "Not implemented, yet" << std::endl;
     }
 }
 
-void ShoppingSystem::PrintShopTable()
+void ShoppingSystem::PrintTable(std::string tableName)
 {
     if (!_conn)
     {
@@ -88,7 +91,8 @@ void ShoppingSystem::PrintShopTable()
         return;
     }
 
-    PGresult *result = PQexec(_conn, "SELECT * FROM popl8979.Parduotuve;");
+    std::string sqlQuery = "SELECT * FROM " + tableName + ";";
+    PGresult *result = PQexec(_conn, sqlQuery.c_str());
 
     if (PQresultStatus(result) != PGRES_TUPLES_OK)
     {
@@ -97,24 +101,40 @@ void ShoppingSystem::PrintShopTable()
         return;
     }
 
+    // Get the number of rows and columns in the result
     int numRows = PQntuples(result);
     int numCols = PQnfields(result);
 
-    for (int col = 0; col < numCols; ++col)
+    int colWidth = 100 / numCols;
+
+    // Print column names
+    for (int col = 0; col < numCols - 1; ++col)
     {
-        std::cout << PQfname(result, col) << "\t";
+        std::cout << std::setw(colWidth) << std::left << PQfname(result, col) << "|";
+    }
+    // Print the last column without the '|'
+    std::cout << std::setw(colWidth) << std::left << PQfname(result, numCols - 1) << std::endl;
+
+    // Print line of dashes
+    for (int col = 0; col <= 100; ++col)
+    {
+        std::cout << "-";
     }
     std::cout << std::endl;
 
+    // Print the data
     for (int row = 0; row < numRows; ++row)
     {
-        for (int col = 0; col < numCols; ++col)
+        for (int col = 0; col < numCols - 1; ++col)
         {
-            std::cout << PQgetvalue(result, row, col) << "\t";
+            std::cout << std::setw(colWidth) << std::left << PQgetvalue(result, row, col) << "|";
         }
-        std::cout << std::endl;
+        // Print the last column without the '|'
+        std::cout << std::setw(colWidth) << std::left << PQgetvalue(result, row, numCols - 1) << std::endl;
     }
+    std::cout << std::endl;
 
+    // Clear the result object
     PQclear(result);
 }
 
