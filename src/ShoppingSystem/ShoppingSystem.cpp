@@ -1,11 +1,7 @@
 #include "HeaderFiles/ShoppingSystem.h"
 
 ShoppingSystem::ShoppingSystem(std::string dbName, std::string username, std::string password)
-    : _dbName(dbName), _username(username), _password(password), _conn(nullptr)
-{
-    // ConnectToDataBase();
-    // DisconnectFromDataBase();
-}
+    : _dbName(dbName), _username(username), _password(password), _conn(nullptr) {}
 
 void ShoppingSystem::Start()
 {
@@ -14,8 +10,8 @@ void ShoppingSystem::Start()
         while (_conn != nullptr)
         {
             ShowMenu();
-            std::cout << RetrieveUsersInput() << std::endl;
-            DisconnectFromDataBase();
+            int usersInput = RetrieveUsersInput();
+            ExecuteUsersCommand(usersInput);
         }
     }
     else
@@ -62,6 +58,21 @@ int ShoppingSystem::RetrieveUsersInput()
 bool ShoppingSystem::IsValidInput(int input)
 {
     return input >= 0 && input <= 5;
+}
+
+void ShoppingSystem::ExecuteUsersCommand(int input)
+{
+    switch (input)
+    {
+    case 0:
+        DisconnectFromDataBase();
+        break;
+    case 1:
+        std::cout << "1 was entered" << std::endl;
+        break;
+    default:
+        std::cout << "Not implemented, yet" << std::endl;
+    }
 }
 
 bool ShoppingSystem::ConnectToDataBase()

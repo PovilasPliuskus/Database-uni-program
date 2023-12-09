@@ -19,6 +19,7 @@ private:
     void ShowMenu();
     int RetrieveUsersInput();
     bool IsValidInput(int input);
+    void ExecuteUsersCommand(int input);
 
 public:
     ShoppingSystem(std::string dbName, std::string username, std::string password);
