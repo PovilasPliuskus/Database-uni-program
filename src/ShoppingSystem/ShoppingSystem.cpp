@@ -31,6 +31,48 @@ void ShoppingSystem::ShowMenu()
     std::cout << "6. Get rid of a product" << std::endl;
 }
 
+void ShoppingSystem::GetRidOfProduct()
+{
+    PrintTable("popl8979.Produktas");
+    int index = RetrieveIndex("popl8979.Produktas", "ProduktoID");
+    if (index == -1)
+    {
+        return;
+    }
+    else
+    {
+        DeleteProduct(index);
+    }
+}
+
+void ShoppingSystem::DeleteProduct(int index)
+{
+    if (!_conn)
+    {
+        std::cerr << "Not connected to the database." << std::endl;
+        return;
+    }
+
+    // Construct the SQL query to delete the product
+    std::string sqlQuery = "DELETE FROM popl8979.Produktas WHERE produktoid = " + std::to_string(index) + ";";
+
+    // Execute the SQL query
+    PGresult *result = PQexec(_conn, sqlQuery.c_str());
+
+    // Check for a successful query execution
+    if (PQresultStatus(result) != PGRES_COMMAND_OK)
+    {
+        std::cerr << "Query execution failed: " << PQerrorMessage(_conn) << std::endl;
+    }
+    else
+    {
+        std::cout << "Product deleted successfully!" << std::endl;
+    }
+
+    // Clear the result object
+    PQclear(result);
+}
+
 int ShoppingSystem::RetrieveUsersInput()
 {
     int input;
@@ -86,6 +128,9 @@ void ShoppingSystem::ExecuteUsersCommand(int input)
         break;
     case 5:
         ChangeProductPrice();
+        break;
+    case 6:
+        GetRidOfProduct();
         break;
     default:
         std::cout << "Not implemented, yet" << std::endl;
