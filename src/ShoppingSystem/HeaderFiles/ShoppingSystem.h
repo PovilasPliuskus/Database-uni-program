@@ -11,11 +11,15 @@ private:
     std::string _dbName;
     std::string _username;
     std::string _password;
+    PGconn *_conn;
+
+    bool ConnectToDataBase();
+    void DisconnectFromDataBase();
+    void ShowMenu();
 
 public:
     ShoppingSystem(std::string dbName, std::string username, std::string password);
-
-    void ConnectToDataBase();
+    void Start();
 
     std::string getDbName() const;
     std::string getUsername() const;

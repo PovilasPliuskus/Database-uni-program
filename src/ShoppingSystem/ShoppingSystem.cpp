@@ -1,29 +1,64 @@
 #include "HeaderFiles/ShoppingSystem.h"
 
 ShoppingSystem::ShoppingSystem(std::string dbName, std::string username, std::string password)
-    : _dbName(dbName), _username(username), _password(password)
+    : _dbName(dbName), _username(username), _password(password), _conn(nullptr)
 {
-    ConnectToDataBase();
+    // ConnectToDataBase();
+    // DisconnectFromDataBase();
 }
 
-void ShoppingSystem::ConnectToDataBase()
+void ShoppingSystem::Start()
 {
-    std::cout << "Connecting to Database!" << std::endl;
+    if (ConnectToDataBase())
+    {
+        while (_conn != nullptr)
+        {
+            ShowMenu();
+            DisconnectFromDataBase();
+        }
+    }
+    else
+    {
+        std::cerr << "Failed to connect to the database." << std::endl;
+    }
+}
+
+void ShoppingSystem::ShowMenu()
+{
+    std::cout << "0. Exit program" << std::endl;
+    std::cout << "1. Something to do" << std::endl;
+}
+
+bool ShoppingSystem::ConnectToDataBase()
+{
+    std::cout << "Connecting to Database..." << std::endl;
 
     std::string connectionParams = "dbname=" + _dbName + " user=" + _username + " password=" + _password;
-    PGconn *conn = PQconnectdb(connectionParams.c_str());
+    _conn = PQconnectdb(connectionParams.c_str());
 
     // Check for a successful connection
-    if (PQstatus(conn) != CONNECTION_OK)
+    if (PQstatus(_conn) != CONNECTION_OK)
     {
-        std::cerr << "Connection to database failed: " << PQerrorMessage(conn) << std::endl;
-        PQfinish(conn); // Close the connection
+        std::cerr << "Connection to database failed: " << PQerrorMessage(_conn) << std::endl;
+        PQfinish(_conn); // Close the connection
 
-        return;
+        return false;
     }
 
     // Close the connection
-    PQfinish(conn);
+    // PQfinish(_conn);
+    std::cout << "Connection was successfull!" << std::endl;
+    return true;
+}
+
+void ShoppingSystem::DisconnectFromDataBase()
+{
+    if (_conn)
+    {
+        PQfinish(_conn);
+        std::cout << "Disconnected from the database." << std::endl;
+        _conn = nullptr;
+    }
 }
 
 std::string ShoppingSystem::getDbName() const
