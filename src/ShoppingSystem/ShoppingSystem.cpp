@@ -147,6 +147,7 @@ void ShoppingSystem::PrintTable(std::string tableName)
 void ShoppingSystem::AddNewProduct()
 {
     std::cout << RetrieveProductName() << std::endl;
+    RetrieveProductPrice();
 }
 
 std::string ShoppingSystem::RetrieveProductName()
@@ -170,6 +171,35 @@ std::string ShoppingSystem::RetrieveProductName()
     } while (true);
 
     return productName;
+}
+
+float ShoppingSystem::RetrieveProductPrice()
+{
+    float productPrice;
+
+    do
+    {
+        std::cout << "Enter product price: ";
+        std::string input;
+        std::cin >> input;
+
+        std::istringstream iss(input);
+        if (iss >> std::noskipws >> productPrice && iss.eof())
+        {
+            break;
+        }
+        else
+        {
+            std::cerr << "Invalid input. Please enter a valid floating-point number." << std::endl;
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        }
+
+    } while (true);
+
+    std::cout.precision(2);
+
+    return productPrice;
 }
 
 bool ShoppingSystem::ConnectToDataBase()

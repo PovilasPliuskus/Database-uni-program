@@ -25,6 +25,7 @@ private:
     void PrintTable(std::string tableName);
     void AddNewProduct();
     std::string RetrieveProductName();
+    float RetrieveProductPrice();
 
 public:
     ShoppingSystem(std::string dbName, std::string username, std::string password);
