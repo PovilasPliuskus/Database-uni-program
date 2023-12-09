@@ -27,3 +27,9 @@ CREATE TABLE popl8979.Parduoda (
     FOREIGN KEY (Produktas) REFERENCES popl8979.Produktas(ProduktoID) ON DELETE CASCADE
     ON UPDATE CASCADE
 );
+
+CREATE VIEW popl8979.ParduotuvesIrProduktai AS
+SELECT p.Adresas, pr.Pavadinimas, pr.Kaina, pd.Kiekis
+FROM popl8979.Parduotuve p
+JOIN popl8979.Parduoda pd ON p.parduotuvesid = pd.Parduotuve
+JOIN popl8979.Produktas pr ON pr.produktoid = pd.Produktas;
