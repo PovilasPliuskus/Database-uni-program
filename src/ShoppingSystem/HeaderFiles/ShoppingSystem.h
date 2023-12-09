@@ -3,6 +3,7 @@
 
 #include <string>
 #include <iostream>
+#include <limits>
 #include "../../../include/libpq-fe.h"
 
 class ShoppingSystem
@@ -11,13 +12,18 @@ private:
     std::string _dbName;
     std::string _username;
     std::string _password;
+    PGconn *_conn;
 
-    void RunInitialSQLQueries(std::string dbName, std::string username, std::string password);
+    bool ConnectToDataBase();
+    void DisconnectFromDataBase();
+    void ShowMenu();
+    int RetrieveUsersInput();
+    bool IsValidInput(int input);
+    void ExecuteUsersCommand(int input);
 
 public:
     ShoppingSystem(std::string dbName, std::string username, std::string password);
-
-    void ConnectToDataBase();
+    void Start();
 
     std::string getDbName() const;
     std::string getUsername() const;

@@ -1,36 +1,110 @@
 #include "HeaderFiles/ShoppingSystem.h"
 
 ShoppingSystem::ShoppingSystem(std::string dbName, std::string username, std::string password)
-    : _dbName(dbName), _username(username), _password(password)
+    : _dbName(dbName), _username(username), _password(password), _conn(nullptr) {}
+
+void ShoppingSystem::Start()
 {
-    ConnectToDataBase();
+    if (ConnectToDataBase())
+    {
+        while (_conn != nullptr)
+        {
+            ShowMenu();
+            int usersInput = RetrieveUsersInput();
+            ExecuteUsersCommand(usersInput);
+        }
+    }
+    else
+    {
+        std::cerr << "Failed to connect to the database." << std::endl;
+    }
 }
 
-void ShoppingSystem::ConnectToDataBase()
+void ShoppingSystem::ShowMenu()
 {
-    std::cout << "Connecting to Database!" << std::endl;
+    std::cout << "0. Exit program" << std::endl;
+    std::cout << "1. Something to do" << std::endl;
+}
 
-    std::string connectionParams = "dbname=" + _dbName + " user=" + _username + " password=" + _password;
-    PGconn *conn = PQconnectdb(connectionParams.c_str());
+int ShoppingSystem::RetrieveUsersInput()
+{
+    int input;
 
-    // Check for a successful connection
-    if (PQstatus(conn) != CONNECTION_OK)
+    while (true)
     {
-        std::cerr << "Connection to database failed: " << PQerrorMessage(conn) << std::endl;
-        PQfinish(conn); // Close the connection
-        // Handle the error or return without further action
-        return;
+        std::cout << "> ";
+        if (std::cin >> input)
+        {
+            if (IsValidInput(input))
+            {
+                break;
+            }
+            else
+            {
+                std::cerr << "There is no such command!" << std::endl;
+            }
+        }
+        else
+        {
+            std::cerr << "There is no such command!" << std::endl;
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        }
     }
 
-    // Perform database operations here...
-
-    // Close the connection
-    PQfinish(conn);
+    return input;
 }
 
-void ShoppingSystem::RunInitialSQLQueries(std::string dbName, std::string username, std::string password)
+bool ShoppingSystem::IsValidInput(int input)
 {
-    system("start cmd");
+    return input >= 0 && input <= 5;
+}
+
+void ShoppingSystem::ExecuteUsersCommand(int input)
+{
+    switch (input)
+    {
+    case 0:
+        DisconnectFromDataBase();
+        break;
+    case 1:
+        std::cout << "1 was entered" << std::endl;
+        break;
+    default:
+        std::cout << "Not implemented, yet" << std::endl;
+    }
+}
+
+bool ShoppingSystem::ConnectToDataBase()
+{
+    std::cout << "Connecting to Database..." << std::endl;
+
+    std::string connectionParams = "dbname=" + _dbName + " user=" + _username + " password=" + _password;
+    _conn = PQconnectdb(connectionParams.c_str());
+
+    // Check for a successful connection
+    if (PQstatus(_conn) != CONNECTION_OK)
+    {
+        std::cerr << "Connection to database failed: " << PQerrorMessage(_conn) << std::endl;
+        PQfinish(_conn); // Close the connection
+
+        return false;
+    }
+
+    // Close the connection
+    // PQfinish(_conn);
+    std::cout << "Connection was successfull!" << std::endl;
+    return true;
+}
+
+void ShoppingSystem::DisconnectFromDataBase()
+{
+    if (_conn)
+    {
+        PQfinish(_conn);
+        std::cout << "Disconnected from the database." << std::endl;
+        _conn = nullptr;
+    }
 }
 
 std::string ShoppingSystem::getDbName() const
