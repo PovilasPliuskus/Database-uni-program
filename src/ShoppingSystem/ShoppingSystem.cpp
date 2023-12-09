@@ -81,6 +81,9 @@ void ShoppingSystem::ExecuteUsersCommand(int input)
     case 3:
         PrintTable("popl8979.ParduotuvesIrProduktai");
         break;
+    case 4:
+        AddNewProduct();
+        break;
     default:
         std::cout << "Not implemented, yet" << std::endl;
     }
@@ -138,6 +141,96 @@ void ShoppingSystem::PrintTable(std::string tableName)
     std::cout << std::endl;
 
     // Clear the result object
+    PQclear(result);
+}
+
+void ShoppingSystem::AddNewProduct()
+{
+    std::string productName = RetrieveProductName();
+    float productPrice = RetrieveProductPrice();
+
+    InsertProduct(productName, productPrice);
+}
+
+std::string ShoppingSystem::RetrieveProductName()
+{
+    std::string productName;
+    std::regex latinLetters("^[a-zA-Z]+$");
+
+    do
+    {
+        std::cout << "Enter product name: ";
+        std::cin >> productName;
+
+        if (!std::regex_match(productName, latinLetters))
+        {
+            std::cerr << "Invalid input. Product name should contain only Latin letters" << std::endl;
+        }
+        else
+        {
+            break;
+        }
+    } while (true);
+
+    return productName;
+}
+
+float ShoppingSystem::RetrieveProductPrice()
+{
+    float productPrice;
+
+    do
+    {
+        std::cout << "Enter product price: ";
+        std::string input;
+        std::cin >> input;
+
+        std::istringstream iss(input);
+        if (iss >> std::noskipws >> productPrice && iss.eof())
+        {
+            break;
+        }
+        else
+        {
+            std::cerr << "Invalid input. Please enter a valid floating-point number." << std::endl;
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        }
+
+    } while (true);
+
+    std::cout.precision(2);
+
+    return productPrice;
+}
+
+void ShoppingSystem::InsertProduct(const std::string &productName, float productPrice)
+{
+    if (!_conn)
+    {
+        std::cerr << "Not connected to the database." << std::endl;
+        return;
+    }
+
+    const char *sql = "INSERT INTO popl8979.Produktas (Pavadinimas, Kaina) VALUES ($1, $2);";
+
+    const char *paramValues[2] = {productName.c_str(), std::to_string(productPrice).c_str()};
+    int paramLengths[2] = {static_cast<int>(productName.length()), static_cast<int>(strlen(paramValues[1]))};
+    int paramFormats[2] = {0, 0}; // 0 for text
+
+    PGresult *result = PQexecParams(_conn, sql, 2, nullptr, paramValues, paramLengths, paramFormats, 0);
+
+    if (PQresultStatus(result) != PGRES_COMMAND_OK)
+    {
+        std::cerr << "Query execution failed: " << PQerrorMessage(_conn) << std::endl;
+    }
+    else
+    {
+        std::cout << "-------------------------------" << std::endl;
+        std::cout << "New product added successfully!" << std::endl;
+        std::cout << "-------------------------------" << std::endl;
+    }
+
     PQclear(result);
 }
 
