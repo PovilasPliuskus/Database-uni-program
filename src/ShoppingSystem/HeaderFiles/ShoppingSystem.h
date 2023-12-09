@@ -20,6 +20,7 @@ private:
     int RetrieveUsersInput();
     bool IsValidInput(int input);
     void ExecuteUsersCommand(int input);
+    void PrintShopTable();
 
 public:
     ShoppingSystem(std::string dbName, std::string username, std::string password);

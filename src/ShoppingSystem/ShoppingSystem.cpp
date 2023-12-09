@@ -73,11 +73,49 @@ void ShoppingSystem::ExecuteUsersCommand(int input)
         DisconnectFromDataBase();
         break;
     case 1:
-        std::cout << "1 was entered" << std::endl;
+        PrintShopTable();
         break;
     default:
         std::cout << "Not implemented, yet" << std::endl;
     }
+}
+
+void ShoppingSystem::PrintShopTable()
+{
+    if (!_conn)
+    {
+        std::cerr << "Not connected to the database." << std::endl;
+        return;
+    }
+
+    PGresult *result = PQexec(_conn, "SELECT * FROM popl8979.Parduotuve;");
+
+    if (PQresultStatus(result) != PGRES_TUPLES_OK)
+    {
+        std::cerr << "Query execution failed: " << PQerrorMessage(_conn) << std::endl;
+        PQclear(result);
+        return;
+    }
+
+    int numRows = PQntuples(result);
+    int numCols = PQnfields(result);
+
+    for (int col = 0; col < numCols; ++col)
+    {
+        std::cout << PQfname(result, col) << "\t";
+    }
+    std::cout << std::endl;
+
+    for (int row = 0; row < numRows; ++row)
+    {
+        for (int col = 0; col < numCols; ++col)
+        {
+            std::cout << PQgetvalue(result, row, col) << "\t";
+        }
+        std::cout << std::endl;
+    }
+
+    PQclear(result);
 }
 
 bool ShoppingSystem::ConnectToDataBase()
