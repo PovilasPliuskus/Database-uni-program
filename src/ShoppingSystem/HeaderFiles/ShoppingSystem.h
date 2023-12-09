@@ -26,6 +26,7 @@ private:
     void AddNewProduct();
     std::string RetrieveProductName();
     float RetrieveProductPrice();
+    void InsertProduct(const std::string &productName, float productPrice);
 
 public:
     ShoppingSystem(std::string dbName, std::string username, std::string password);

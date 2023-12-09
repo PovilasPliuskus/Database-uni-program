@@ -146,8 +146,10 @@ void ShoppingSystem::PrintTable(std::string tableName)
 
 void ShoppingSystem::AddNewProduct()
 {
-    std::cout << RetrieveProductName() << std::endl;
-    RetrieveProductPrice();
+    std::string productName = RetrieveProductName();
+    float productPrice = RetrieveProductPrice();
+
+    InsertProduct(productName, productPrice);
 }
 
 std::string ShoppingSystem::RetrieveProductName()
@@ -200,6 +202,36 @@ float ShoppingSystem::RetrieveProductPrice()
     std::cout.precision(2);
 
     return productPrice;
+}
+
+void ShoppingSystem::InsertProduct(const std::string &productName, float productPrice)
+{
+    if (!_conn)
+    {
+        std::cerr << "Not connected to the database." << std::endl;
+        return;
+    }
+
+    const char *sql = "INSERT INTO popl8979.Produktas (Pavadinimas, Kaina) VALUES ($1, $2);";
+
+    const char *paramValues[2] = {productName.c_str(), std::to_string(productPrice).c_str()};
+    int paramLengths[2] = {static_cast<int>(productName.length()), static_cast<int>(strlen(paramValues[1]))};
+    int paramFormats[2] = {0, 0}; // 0 for text
+
+    PGresult *result = PQexecParams(_conn, sql, 2, nullptr, paramValues, paramLengths, paramFormats, 0);
+
+    if (PQresultStatus(result) != PGRES_COMMAND_OK)
+    {
+        std::cerr << "Query execution failed: " << PQerrorMessage(_conn) << std::endl;
+    }
+    else
+    {
+        std::cout << "-------------------------------" << std::endl;
+        std::cout << "New product added successfully!" << std::endl;
+        std::cout << "-------------------------------" << std::endl;
+    }
+
+    PQclear(result);
 }
 
 bool ShoppingSystem::ConnectToDataBase()
