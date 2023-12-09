@@ -12,8 +12,6 @@ private:
     std::string _username;
     std::string _password;
 
-    void RunInitialSQLQueries(std::string dbName, std::string username, std::string password);
-
 public:
     ShoppingSystem(std::string dbName, std::string username, std::string password);
 

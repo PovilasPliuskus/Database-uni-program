@@ -18,19 +18,12 @@ void ShoppingSystem::ConnectToDataBase()
     {
         std::cerr << "Connection to database failed: " << PQerrorMessage(conn) << std::endl;
         PQfinish(conn); // Close the connection
-        // Handle the error or return without further action
+
         return;
     }
 
-    // Perform database operations here...
-
     // Close the connection
     PQfinish(conn);
-}
-
-void ShoppingSystem::RunInitialSQLQueries(std::string dbName, std::string username, std::string password)
-{
-    system("start cmd");
 }
 
 std::string ShoppingSystem::getDbName() const
