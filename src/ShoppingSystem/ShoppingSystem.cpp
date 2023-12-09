@@ -23,7 +23,12 @@ void ShoppingSystem::Start()
 void ShoppingSystem::ShowMenu()
 {
     std::cout << "0. Exit program" << std::endl;
-    std::cout << "1. Something to do" << std::endl;
+    std::cout << "1. View all shops" << std::endl;
+    std::cout << "2. View all products" << std::endl;
+    std::cout << "3. View shops and products" << std::endl;
+    std::cout << "4. Add a new product" << std::endl;
+    std::cout << "5. Change the price of a product" << std::endl;
+    std::cout << "6. Get rid of a product" << std::endl;
 }
 
 int ShoppingSystem::RetrieveUsersInput()
@@ -57,7 +62,7 @@ int ShoppingSystem::RetrieveUsersInput()
 
 bool ShoppingSystem::IsValidInput(int input)
 {
-    return input >= 0 && input <= 5;
+    return input >= 0 && input <= 6;
 }
 
 void ShoppingSystem::ExecuteUsersCommand(int input)
